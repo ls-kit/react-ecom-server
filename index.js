@@ -1,5 +1,6 @@
 const express = require("express");
 const { MongoClient } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
 const app = express();
@@ -9,7 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 // connect database
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gkhtj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = process.env.MONGO_URL;
+
+// console.log(uri);
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,43 +27,66 @@ const run = async () => {
     // connect db
     await client.connect();
     // create database name
-    const database = client.db("tour-and-travel");
+    const database = client.db("crud-practice");
     // create a collection
     const userCollection = database.collection("user");
 
     // post data
 
     app.post("/user", async (req, res) => {
-      const user = req.body;
-
-      const result = await userCollection.insertOne(user);
-      console.log(result);
-      res.json(result);
+      try {
+        const user = req.body;
+        console.log(user);
+        const result = await userCollection.insertMany(user);
+        console.log(result);
+        res.json(result);
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
     // get data
-
     app.get("/user", async (req, res) => {
-      const data = userCollection.find({});
-      const places = await data.toArray();
-      res.send(places);
+      try {
+        const data = await userCollection.find({}).toArray();
+        res.send(data);
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
     // update data
-
     app.patch("/user/:id", async (req, res) => {
-      const id = req.params;
-      const updatedData = req.body;
-      const result = await userCollection.findOneAndUpdate(id, updatedData);
-      console.log(result);
-      res.json(result);
+      try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        const result = await userCollection.findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $set: updatedData }
+        );
+        console.log(result);
+        res.json(result);
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
+    // delete data
     app.delete("/user/:id", async (req, res) => {
-      const id = req.params;
-      const result = await userCollection.findOneAndDelete(id);
-      console.log(result);
-      res.json(result);
+      try {
+        const id = req.params.id;
+        const result = await userCollection.findOneAndDelete({
+          _id: new ObjectId(id),
+        });
+        console.log(result);
+        res.json(result);
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
   } catch (error) {
     console.log(error);
