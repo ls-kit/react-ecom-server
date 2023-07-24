@@ -15,3 +15,7 @@ const client = new MongoClient(uri, {
 });
 
 // console.log(client);
+
+app.listen(port, () => {
+  console.log("server is running on port", port);
+});
