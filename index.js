@@ -46,7 +46,15 @@ const run = async () => {
       res.send(places);
     });
 
-    
+    // update data
+
+    app.patch("/user/:id", async (req, res) => {
+      const id = req.params;
+      const updatedData = req.body;
+      const result = await userCollection.findOneAndUpdate(id, updatedData);
+      console.log(result);
+      res.json(result);
+    });
   } catch (error) {
     console.log(error);
   } finally {
