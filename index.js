@@ -55,6 +55,13 @@ const run = async () => {
       console.log(result);
       res.json(result);
     });
+
+    app.delete("/user/:id", async (req, res) => {
+      const id = req.params;
+      const result = await userCollection.findOneAndDelete(id);
+      console.log(result);
+      res.json(result);
+    });
   } catch (error) {
     console.log(error);
   } finally {
