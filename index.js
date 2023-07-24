@@ -26,25 +26,31 @@ const run = async () => {
     // create database name
     const database = client.db("tour-and-travel");
     // create a collection
-    const userCollection = database.collection('user');
+    const userCollection = database.collection("user");
 
     // post data
 
-    app.post('/user', async (req, res) => {
-        const user = req.body;
-        
+    app.post("/user", async (req, res) => {
+      const user = req.body;
 
-        const result = await userCollection.insertOne(user);
-        console.log(result);
-        res.json(result)
-    })
+      const result = await userCollection.insertOne(user);
+      console.log(result);
+      res.json(result);
+    });
 
+    // get data
 
+    app.get("/user", async (req, res) => {
+      const data = userCollection.find({});
+      const places = await data.toArray();
+      res.send(places);
+    });
 
-
-
+    
   } catch (error) {
     console.log(error);
+  } finally {
+    // await client.close();
   }
 };
 run().catch(console.dir);
