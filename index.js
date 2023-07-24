@@ -25,9 +25,22 @@ const run = async () => {
     await client.connect();
     // create database name
     const database = client.db("tour-and-travel");
+    // create a collection
+    const userCollection = database.collection('user');
+
+    // post data
+
+    app.post('/user', async (req, res) => {
+        const user = req.body;
+        
+
+        const result = await userCollection.insertOne(user);
+        console.log(result);
+        res.json(result)
+    })
 
 
-    
+
 
 
   } catch (error) {
